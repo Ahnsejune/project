@@ -9,493 +9,149 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <style>
-        body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; }
-    </style>
+    <style>body { font-family: 'Pretendard', sans-serif; }</style>
 </head>
 <body class="bg-[#F8FAFC]">
     <div id="root"></div>
-
     <script type="text/babel">
         const { useState, useEffect, useMemo } = React;
 
-        // --- 아이콘 매핑 헬퍼 (React용 Lucide 래퍼) ---
-        // 브라우저 환경에서는 'lucide-react'를 직접 import하기 어렵기 때문에
-        // 전역 lucide 객체를 사용하여 React 컴포넌트로 변환합니다.
         const IconWrapper = ({ name, size = 24, className, ...props }) => {
             const iconName = name.charAt(0).toLowerCase() + name.slice(1);
-            
-            // 아이콘 렌더링 후 SVG로 변환
-            React.useEffect(() => {
-                lucide.createIcons();
-            }, []);
-
+            React.useEffect(() => { lucide.createIcons(); }, []);
             return <i data-lucide={iconName} className={className} style={{ width: size, height: size }} {...props}></i>;
         };
+        const Search = (p) => <IconWrapper name="search" {...p} />;
+        const Filter = (p) => <IconWrapper name="filter" {...p} />;
+        const Briefcase = (p) => <IconWrapper name="briefcase" {...p} />;
+        const CheckCircle2 = (p) => <IconWrapper name="checkCircle2" {...p} />;
+        const DollarSign = (p) => <IconWrapper name="dollarSign" {...p} />;
+        const Building2 = (p) => <IconWrapper name="building2" {...p} />;
+        const MoreHorizontal = (p) => <IconWrapper name="moreHorizontal" {...p} />;
+        const LayoutGrid = (p) => <IconWrapper name="layoutGrid" {...p} />;
+        const TableIcon = (p) => <IconWrapper name="table" {...p} />;
+        const Wallet = (p) => <IconWrapper name="wallet" {...p} />;
+        const Archive = (p) => <IconWrapper name="archive" {...p} />;
+        const Settings = (p) => <IconWrapper name="settings" {...p} />;
+        const RefreshCw = (p) => <IconWrapper name="refreshCw" {...p} />;
+        const AlertCircle = (p) => <IconWrapper name="alertCircle" {...p} />;
+        const X = (p) => <IconWrapper name="x" {...p} />;
+        const CreditCard = (p) => <IconWrapper name="creditCard" {...p} />;
+        const UserCircle = (p) => <IconWrapper name="userCircle" {...p} />;
 
-        // 코드에서 사용된 아이콘들을 정의
-        const Search = (props) => <IconWrapper name="search" {...props} />;
-        const Filter = (props) => <IconWrapper name="filter" {...props} />;
-        const Briefcase = (props) => <IconWrapper name="briefcase" {...props} />;
-        const CheckCircle2 = (props) => <IconWrapper name="checkCircle2" {...props} />;
-        const DollarSign = (props) => <IconWrapper name="dollarSign" {...props} />;
-        const Building2 = (props) => <IconWrapper name="building2" {...props} />;
-        const Users = (props) => <IconWrapper name="users" {...props} />;
-        const MoreHorizontal = (props) => <IconWrapper name="moreHorizontal" {...props} />;
-        const Calendar = (props) => <IconWrapper name="calendar" {...props} />;
-        const LayoutGrid = (props) => <IconWrapper name="layoutGrid" {...props} />;
-        const TableIcon = (props) => <IconWrapper name="table" {...props} />;
-        const Download = (props) => <IconWrapper name="download" {...props} />;
-        const Plus = (props) => <IconWrapper name="plus" {...props} />;
-        const Wallet = (props) => <IconWrapper name="wallet" {...props} />;
-        const Archive = (props) => <IconWrapper name="archive" {...props} />;
-        const Settings = (props) => <IconWrapper name="settings" {...props} />;
-        const RefreshCw = (props) => <IconWrapper name="refreshCw" {...props} />;
-        const LinkIcon = (props) => <IconWrapper name="link" {...props} />;
-        const AlertCircle = (props) => <IconWrapper name="alertCircle" {...props} />;
-        const X = (props) => <IconWrapper name="x" {...props} />;
-        const CreditCard = (props) => <IconWrapper name="creditCard" {...props} />;
-        const FileText = (props) => <IconWrapper name="fileText" {...props} />;
-        const UserCircle = (props) => <IconWrapper name="userCircle" {...props} />;
-
-
-        /**
-         * CSV 파싱 유틸리티
-         */
         const parseCSV = (text) => {
           const lines = text.split('\n').filter(line => line.trim() !== '');
           if (lines.length < 2) return [];
-
           const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
           
           const keyMap = {
-            '파일번호': 'fileNo',
-            '구분': 'type',
-            '담당자': 'manager',
-            '거래처': 'client',
-            '프로젝트명': 'project',
-            '공급업체': 'supplier',
-            '계약금액': 'amount',
-            '계약일': 'contractDate',
-            '착수일': 'startDate',
-            '종료일': 'endDate',
-            '선금_정산일': 'downPay_date',
-            '선금_금액': 'downPay_amount',
-            '선금_상태': 'downPay_status',
-            '선금_계산서': 'downPay_tax',
-            '중도금_정산일': 'midPay_date',
-            '중도금_금액': 'midPay_amount',
-            '중도금_상태': 'midPay_status',
-            '중도금_계산서': 'midPay_tax',
-            '잔금_정산일': 'balance_date',
-            '잔금_금액': 'balance_amount',
-            '잔금_상태': 'balance_status',
-            '잔금_계산서': 'balance_tax'
+            '파일번호': 'fileNo', '구분': 'type', '담당자': 'manager', '거래처': 'client',
+            '프로젝트명': 'project', '공급업체': 'supplier', '계약금액': 'amount',
+            '계약일': 'contractDate', '착수일': 'startDate', '종료일': 'endDate',
+            '선금_정산일': 'downPay_date', '선금_금액': 'downPay_amount', '선금_상태': 'downPay_status', '선금_계산서': 'downPay_tax',
+            '중도금_정산일': 'midPay_date', '중도금_금액': 'midPay_amount', '중도금_상태': 'midPay_status', '중도금_계산서': 'midPay_tax',
+            '잔금_정산일': 'balance_date', '잔금_금액': 'balance_amount', '잔금_상태': 'balance_status', '잔금_계산서': 'balance_tax'
           };
 
           const result = [];
-
           for (let i = 1; i < lines.length; i++) {
             let row = [];
             let match;
             const regex = /(?:^|,)(?:"([^"]*)"|([^",]*))/g;
             let line = lines[i];
-            
             while ((match = regex.exec(line)) !== null && match.index < line.length) {
-              let val = match[1] || match[2] || '';
-              row.push(val.trim());
+              row.push((match[1] || match[2] || '').trim());
             }
-
             if (row.length > 0) {
-              const obj = { 
-                id: `row-${i}-${Math.random().toString(36).substr(2, 9)}`,
-                downPay: {}, midPay: {}, balance: {} 
-              };
-              
+              const obj = { id: i, downPay: {}, midPay: {}, balance: {} };
               let hasData = false;
-
               headers.forEach((header, index) => {
                 const key = keyMap[header] || header;
                 let value = row[index];
-
-                if (key.includes('amount')) {
-                   value = parseInt(value?.replace(/[^0-9-]/g, '') || '0', 10);
-                }
-
+                if (key.includes('amount')) value = parseInt(value?.replace(/[^0-9-]/g, '') || '0', 10);
                 if (value) hasData = true;
-
                 if (key.includes('_')) {
-                    const [parent, child] = key.split('_');
-                    if (obj[parent]) {
-                        obj[parent][child] = value;
-                    }
+                    const [p, c] = key.split('_');
+                    if (obj[p]) obj[p][c] = value;
                 } else {
                     obj[key] = value;
                 }
               });
-
               if (hasData) result.push(obj);
             }
           }
           return result;
         };
 
-        /**
-         * 샘플 데이터 (더큐알 내부 데이터 반영)
-         */
-        const SAMPLE_DATA = [
-          { 
-            id: 1, 
-            fileNo: '25-001',
-            type: '입금', 
-            manager: '차현지',
-            client: '(주)미래테크', 
-            project: '[샘플] 2025년 차세대 AI 플랫폼 구축', 
-            supplier: '더큐알',
-            contractDate: '2024-12-15',
-            startDate: '2025-01-01',
-            endDate: '2025-06-30',
-            amount: 150000000, 
-            downPay: { date: '2025-01-10', amount: 45000000, status: '정산 완료', tax: '발행 완료' },
-            midPay: { date: '2025-03-15', amount: 75000000, status: '신청 완료', tax: '발행 완료' },
-            balance: { date: '2025-06-30', amount: 30000000, status: '미정산', tax: '미발행' }
-          },
-          { 
-            id: 2, 
-            fileNo: '25-002',
-            type: '지출', 
-            manager: '정지운',
-            client: 'Apple Korea', 
-            project: '[샘플] 장비 렌탈 비용', 
-            supplier: '더큐알',
-            contractDate: '2025-01-02',
-            startDate: '2025-01-02',
-            endDate: '2025-01-05',
-            amount: 5500000, 
-            downPay: { date: '2025-01-02', amount: 5500000, status: '정산 완료', tax: '카드 결제' },
-            midPay: { date: '', amount: 0, status: '', tax: '' },
-            balance: { date: '', amount: 0, status: '', tax: '' }
-          },
-          { 
-            id: 3, 
-            fileNo: '25-003',
-            type: '미확정', 
-            manager: '안세준',
-            client: '현대자동차', 
-            project: '[샘플] 신차 홍보 영상 기획', 
-            supplier: '더블제이스튜디오',
-            contractDate: '2025-02-01',
-            startDate: '2025-02-15',
-            endDate: '2025-04-15',
-            amount: 40000000, 
-            downPay: { date: '', amount: 0, status: '미정산', tax: '' },
-            midPay: { date: '', amount: 0, status: '', tax: '' },
-            balance: { date: '', amount: 0, status: '', tax: '' }
-          },
-        ];
+        const formatCurrency = (amt) => (amt === 0 || isNaN(amt)) ? '-' : new Intl.NumberFormat('ko-KR').format(amt);
 
-        const formatCurrency = (amount) => {
-          if (amount === 0 || isNaN(amount)) return '-';
-          return new Intl.NumberFormat('ko-KR').format(amount);
-        };
-
-        const Badge = ({ label, type = 'default' }) => {
+        const Badge = ({ label, type }) => {
             if (!label) return null;
-
             const styles = {
                 '입금': 'bg-indigo-50 text-indigo-700 ring-1 ring-indigo-600/20',
                 '지출': 'bg-rose-50 text-rose-700 ring-1 ring-rose-600/20',
                 '미확정': 'bg-slate-100 text-slate-600 ring-1 ring-slate-500/20',
-                
                 '정산 완료': 'bg-blue-50 text-blue-700 ring-1 ring-blue-600/20',
                 '신청 완료': 'bg-amber-50 text-amber-700 ring-1 ring-amber-600/20',
                 '미정산': 'bg-slate-50 text-slate-400 ring-1 ring-slate-200',
-                
                 '발행 완료': 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/20',
                 '카드 결제': 'bg-purple-50 text-purple-700 ring-1 ring-purple-600/20',
-                
                 '더큐알': 'bg-slate-800 text-white',
                 '더블제이스튜디오': 'bg-white text-slate-800 border border-slate-300',
-                
                 'manager': 'bg-slate-100 text-slate-700 border border-slate-200',
             };
-
-            let styleClass = styles[label] || 'bg-slate-50 text-slate-600 ring-1 ring-slate-600/20';
-            if (type === 'manager') styleClass = styles['manager'];
-
-            return (
-                <span className={`px-2 py-0.5 rounded text-[10px] font-bold tracking-tight whitespace-nowrap inline-flex items-center gap-1 ${styleClass}`}>
-                    {type === 'manager' && <UserCircle size={10} />}
-                    {label}
-                </span>
-            );
+            let s = styles[label] || 'bg-slate-50 text-slate-600 ring-1 ring-slate-600/20';
+            if (type === 'manager') s = styles['manager'];
+            return <span className={`px-2 py-0.5 rounded text-[10px] font-bold inline-flex items-center gap-1 ${s}`}>{type === 'manager' && <UserCircle size={10} />}{label}</span>;
         };
 
-        const PaymentCell = ({ data, title }) => {
+        const PaymentCell = ({ data }) => {
             if (!data || data.amount === 0) return <div className="text-center text-slate-200">-</div>;
             return (
                 <div className="flex flex-col gap-1 text-right">
                     <span className="font-bold text-slate-700">{formatCurrency(data.amount)}</span>
-                    <div className="flex justify-end gap-1 flex-wrap">
-                        <Badge label={data.status} />
-                        <Badge label={data.tax} />
-                    </div>
+                    <div className="flex justify-end gap-1 flex-wrap"><Badge label={data.status} /><Badge label={data.tax} /></div>
                     {data.date && <span className="text-[10px] text-slate-400 font-mono mt-0.5">{data.date}</span>}
                 </div>
             );
         };
 
-        const ProjectListView = ({ data, viewMode, isArchived = false }) => {
-          // 아이콘 렌더링 트리거
-          React.useEffect(() => {
-              lucide.createIcons();
-          }, [data, viewMode]);
-
-          if (data.length === 0) {
-            return (
-              <div className="py-20 text-center text-slate-400 bg-white rounded-2xl border border-slate-200 border-dashed flex flex-col items-center justify-center gap-3">
-                <div className="p-4 bg-slate-50 rounded-full">
-                   {isArchived ? <Archive size={24} className="text-slate-300" /> : <Search size={24} className="text-slate-300" />}
-                </div>
-                <p className="text-sm font-medium">데이터가 없습니다.</p>
-                <p className="text-xs text-slate-400">필터 조건을 변경하거나 데이터를 확인해주세요.</p>
-              </div>
-            );
-          }
-
-          if (viewMode === 'table') {
-            return (
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm text-left">
-                    <thead>
-                      <tr className="bg-slate-50/50 border-b border-slate-100 text-xs uppercase tracking-wider text-slate-500 font-semibold whitespace-nowrap">
-                        <th className="px-4 py-3 w-[60px]">No.</th>
-                        <th className="px-4 py-3 w-[80px]">구분</th>
-                        <th className="px-4 py-3 w-[80px]">담당자</th>
-                        <th className="px-4 py-3 min-w-[200px]">프로젝트 / 거래처</th>
-                        <th className="px-4 py-3 w-[100px]">공급업체</th>
-                        <th className="px-4 py-3 w-[120px]">일정</th>
-                        <th className="px-4 py-3 text-right w-[120px]">총액</th>
-                        <th className="px-4 py-3 text-right min-w-[140px] bg-slate-50/30">선금</th>
-                        <th className="px-4 py-3 text-right min-w-[140px]">중도금</th>
-                        <th className="px-4 py-3 text-right min-w-[140px] bg-slate-50/30">잔금</th>
-                        <th className="px-2 py-3 w-[40px]"></th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-50">
-                      {data.map((project) => (
-                        <tr key={project.id} className="group hover:bg-slate-50/80 transition-colors duration-150">
-                           <td className="px-4 py-4 text-xs font-mono text-slate-400">{project.fileNo}</td>
-                          <td className="px-4 py-4 whitespace-nowrap">
-                            <Badge label={project.type} />
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap">
-                            <Badge label={project.manager} type="manager" />
-                          </td>
-                          <td className="px-4 py-4">
-                            <div className="flex flex-col">
-                              <span className="font-bold text-sm mb-0.5 text-slate-800 line-clamp-1 group-hover:text-indigo-600 transition-colors">
-                                {project.project}
-                              </span>
-                              <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
-                                <Building2 size={11} className="text-slate-400" />
-                                {project.client}
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-4 py-4 whitespace-nowrap">
-                              <Badge label={project.supplier} />
-                          </td>
-                          <td className="px-4 py-4 text-xs text-slate-500 space-y-1 whitespace-nowrap">
-                            <div className="flex justify-between gap-2"><span className="text-slate-400">계약</span> <span className="font-mono">{project.contractDate || '-'}</span></div>
-                            <div className="flex justify-between gap-2"><span className="text-slate-400">착수</span> <span className="font-mono">{project.startDate || '-'}</span></div>
-                            <div className="flex justify-between gap-2"><span className="text-slate-400">종료</span> <span className="font-mono">{project.endDate || '-'}</span></div>
-                          </td>
-                          <td className="px-4 py-4 text-right font-bold text-slate-900 tabular-nums whitespace-nowrap">
-                            {formatCurrency(project.amount)}
-                          </td>
-                          <td className="px-4 py-4 bg-slate-50/30 align-top">
-                            <PaymentCell data={project.downPay} title="선금" />
-                          </td>
-                          <td className="px-4 py-4 align-top">
-                             <PaymentCell data={project.midPay} title="중도금" />
-                          </td>
-                          <td className="px-4 py-4 bg-slate-50/30 align-top">
-                             <PaymentCell data={project.balance} title="잔금" />
-                          </td>
-                          <td className="px-2 py-4 text-center whitespace-nowrap">
-                            <button className="p-1.5 text-slate-300 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all">
-                              <MoreHorizontal size={16} />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            );
-          }
-
-          // Card View
-          return (
-            <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
-              {data.map((project) => (
-                <div key={project.id} className="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-xl transition-all duration-300 group flex flex-col relative overflow-hidden hover:border-indigo-100">
-                  <div className={`absolute top-0 left-0 w-1 h-full ${project.type === '입금' ? 'bg-indigo-500' : project.type === '지출' ? 'bg-rose-500' : 'bg-slate-300'}`}></div>
-
-                  <div className="pl-3 mb-4">
-                     <div className="flex justify-between items-start mb-2">
-                        <div className="flex gap-2 mb-1">
-                            <Badge label={project.type} />
-                            <span className="text-xs font-mono text-slate-400 bg-slate-50 px-1.5 py-0.5 rounded">No.{project.fileNo}</span>
-                        </div>
-                        <button className="text-slate-300 hover:text-slate-600 transition-colors">
-                          <MoreHorizontal size={20} />
-                        </button>
-                     </div>
-                     
-                     <h3 className="text-lg font-bold leading-snug text-slate-900 mb-1 group-hover:text-indigo-700 transition-colors">{project.project}</h3>
-                     <div className="flex items-center gap-2 text-xs text-slate-500 font-bold uppercase tracking-wide">
-                         <Building2 size={12} /> {project.client}
-                     </div>
-                  </div>
-
-                  <div className="pl-3 grid grid-cols-2 gap-3 mb-4">
-                     <div className="bg-slate-50 rounded-lg p-2.5 border border-slate-100">
-                         <span className="text-[10px] text-slate-400 block mb-1">담당자 / 공급업체</span>
-                         <div className="flex flex-wrap gap-1">
-                            <Badge label={project.manager} type="manager" />
-                            <Badge label={project.supplier} />
-                         </div>
-                     </div>
-                     <div className="bg-slate-50 rounded-lg p-2.5 border border-slate-100">
-                         <span className="text-[10px] text-slate-400 block mb-1">계약 기간</span>
-                         <div className="text-xs font-mono text-slate-600">
-                            {project.startDate} ~ {project.endDate}
-                         </div>
-                     </div>
-                  </div>
-
-                  <div className="pl-3 space-y-3 mt-auto">
-                     <div className="flex justify-between items-center pb-2 border-b border-slate-100">
-                         <span className="text-xs font-bold text-slate-500">총 계약금액</span>
-                         <span className="text-base font-bold text-slate-900">{formatCurrency(project.amount)}</span>
-                     </div>
-                     
-                     {[
-                         { label: '선금', data: project.downPay },
-                         { label: '중도금', data: project.midPay },
-                         { label: '잔금', data: project.balance },
-                     ].map((item, idx) => (
-                         item.data && item.data.amount > 0 && (
-                            <div key={idx} className="flex justify-between items-center text-xs">
-                                <div className="flex items-center gap-2">
-                                    <span className="w-10 font-medium text-slate-400">{item.label}</span>
-                                    <div className="flex gap-1">
-                                        <Badge label={item.data.status} />
-                                        <Badge label={item.data.tax} />
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                     <span className="font-bold text-slate-700 block">{formatCurrency(item.data.amount)}</span>
-                                     <span className="text-[10px] text-slate-400 font-mono">{item.data.date}</span>
-                                </div>
-                            </div>
-                         )
-                     ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          );
-        };
-
         const SettingsModal = ({ isOpen, onClose, sheetUrls, setSheetUrls, onSave }) => {
           if (!isOpen) return null;
-          
-          const handleUrlChange = (index, value) => {
-            const newUrls = [...sheetUrls];
-            newUrls[index] = value;
-            setSheetUrls(newUrls);
-          };
-
           return (
-            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in duration-200">
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col">
-                <div className="p-6 border-b border-slate-100 flex justify-between items-center flex-shrink-0">
-                  <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                    <Settings className="text-indigo-600" />
-                    데이터 연동 설정
-                  </h2>
-                  <button onClick={onClose} className="text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-100">
-                    <X size={24} />
-                  </button>
+            <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+              <div className="bg-white rounded-2xl shadow-xl w-full max-w-xl overflow-hidden flex flex-col">
+                <div className="p-5 border-b border-slate-100 flex justify-between items-center">
+                  <h2 className="text-lg font-bold flex items-center gap-2"><Settings className="text-indigo-600" size={20} /> 데이터 연동 설정</h2>
+                  <button onClick={onClose}><X size={24} className="text-slate-400 hover:text-slate-600" /></button>
                 </div>
-                
-                <div className="p-6 space-y-6 overflow-y-auto">
-                  <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-sm text-indigo-800">
-                    <h3 className="font-bold mb-2 flex items-center gap-2">
-                      <LinkIcon size={16} /> 구글 스프레드시트 연결 방법
-                    </h3>
-                    <ol className="list-decimal pl-5 space-y-1 text-indigo-700/90">
-                      <li>연동할 구글 스프레드시트를 엽니다.</li>
-                      <li>상단 메뉴에서 <strong>파일 {'>'} 공유 {'>'} 웹에 게시</strong>를 선택합니다.</li>
-                      <li>'전체 문서' 대신 특정 시트를 선택하고, 형식을 <strong>'쉼표로 구분된 값(.csv)'</strong>으로 변경합니다.</li>
-                      <li>생성된 링크를 복사하여 아래 입력창에 붙여넣으세요.</li>
-                    </ol>
+                <div className="p-5 space-y-4">
+                  <div className="bg-indigo-50 border border-indigo-100 rounded-lg p-3 text-xs text-indigo-800">
+                    <strong>Tip:</strong> 구글 시트 링크(URL)를 아래에 붙여넣고 저장하세요.
                   </div>
-
-                  <div className="space-y-4">
-                     <label className="block text-sm font-bold text-slate-700">시트 URL 입력 (최대 3개)</label>
-                     {[0, 1, 2].map((idx) => (
-                       <div key={idx} className="flex gap-3 items-center">
-                         <span className="w-6 h-6 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 text-xs font-bold">
-                           {idx + 1}
-                         </span>
-                         <input 
-                           type="text" 
-                           className="flex-1 border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-                           placeholder={`https://docs.google.com/spreadsheets/d/.../pub?output=csv (팀 ${idx+1})`}
-                           value={sheetUrls[idx] || ''}
-                           onChange={(e) => handleUrlChange(idx, e.target.value)}
-                         />
-                       </div>
-                     ))}
-                  </div>
+                  {[0, 1, 2].map((idx) => (
+                    <div key={idx} className="flex gap-2 items-center">
+                      <span className="w-5 h-5 flex items-center justify-center rounded-full bg-slate-100 text-xs font-bold">{idx + 1}</span>
+                      <input type="text" className="flex-1 border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none" 
+                        placeholder="https://docs.google.com/.../pub?output=csv"
+                        value={sheetUrls[idx] || ''} onChange={(e) => { const n = [...sheetUrls]; n[idx] = e.target.value; setSheetUrls(n); }} />
+                    </div>
+                  ))}
                 </div>
-
-                <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-3 flex-shrink-0">
-                  <button onClick={onClose} className="px-5 py-2.5 rounded-xl text-slate-600 font-medium hover:bg-slate-100 transition-colors text-sm">
-                    취소
-                  </button>
-                  <button onClick={onSave} className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-colors text-sm flex items-center gap-2">
-                    <CheckCircle2 size={16} /> 저장 및 불러오기
-                  </button>
+                <div className="p-5 border-t bg-slate-50 flex justify-end gap-2">
+                  <button onClick={onClose} className="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 text-sm">취소</button>
+                  <button onClick={onSave} className="px-4 py-2 rounded-lg bg-indigo-600 text-white font-bold hover:bg-indigo-700 text-sm flex gap-1 items-center"><CheckCircle2 size={16} /> 저장</button>
                 </div>
               </div>
             </div>
           );
         };
 
-
-        function ProjectDashboard() {
-          const [data, setData] = useState(SAMPLE_DATA);
+        function App() {
+          const [data, setData] = useState([]);
           const [viewMode, setViewMode] = useState('table');
           const [searchTerm, setSearchTerm] = useState('');
-          
-          const [filters, setFilters] = useState({
-            type: 'all',          
-            manager: 'all',       
-            supplier: 'all',      
-            payStatus: 'all',     
-            taxStatus: 'all',     
-            startDate: '',        
-            endDate: ''           
-          });
-
+          const [filters, setFilters] = useState({ type: 'all', manager: 'all', supplier: 'all', payStatus: 'all', taxStatus: 'all', startDate: '', endDate: '' });
           const [isSettingsOpen, setIsSettingsOpen] = useState(false);
           const [sheetUrls, setSheetUrls] = useState(['', '', '']);
           const [loading, setLoading] = useState(false);
@@ -503,48 +159,41 @@
           const [errorMsg, setErrorMsg] = useState('');
 
           useEffect(() => {
-            const savedUrls = localStorage.getItem('qr_dashboard_urls');
-            if (savedUrls) setSheetUrls(JSON.parse(savedUrls));
+            const saved = localStorage.getItem('qr_dashboard_urls');
+            if (saved) {
+                const urls = JSON.parse(saved);
+                setSheetUrls(urls);
+                if (urls.some(u => u)) setTimeout(fetchSheetData, 500);
+            }
           }, []);
 
           const fetchSheetData = async () => {
-            const validUrls = sheetUrls.filter(url => url && url.includes('output=csv'));
-            
-            if (validUrls.length === 0) {
-              if (localStorage.getItem('qr_dashboard_urls')) setData([]); 
-              return;
-            }
+            const validUrls = sheetUrls.filter(u => u && u.includes('output=csv'));
+            if (validUrls.length === 0) { setData([]); return; }
 
-            setLoading(true);
-            setErrorMsg('');
-            
+            setLoading(true); setErrorMsg('');
             try {
-              const promises = validUrls.map(url => fetch(url).then(res => res.text()));
-              const results = await Promise.all(promises);
+              // ★ 핵심 수정: 더 안정적인 프록시(corsproxy.io) 사용
+              const promises = validUrls.map(url => 
+                fetch(`https://corsproxy.io/?${encodeURIComponent(url)}`)
+                .then(res => {
+                    if (!res.ok) throw new Error('응답 실패');
+                    return res.text();
+                })
+              );
               
+              const results = await Promise.all(promises);
               let allData = [];
-              results.forEach(csvText => {
-                const parsed = parseCSV(csvText);
-                allData = [...allData, ...parsed];
-              });
+              results.forEach(csv => allData = [...allData, ...parseCSV(csv)]);
+              
+              if (allData.length > 0) { setData(allData); setLastUpdated(new Date()); } 
+              else setErrorMsg('데이터 없음: 시트에 내용이 있는지 확인해주세요.');
 
-              if (allData.length > 0) {
-                setData(allData);
-                setLastUpdated(new Date());
-              } else {
-                setErrorMsg('데이터가 비어있습니다. 시트의 헤더명을 확인해주세요.');
-              }
             } catch (err) {
               console.error(err);
-              setErrorMsg('데이터 로드 실패. URL을 확인해주세요.');
-            } finally {
-              setLoading(false);
-            }
+              setErrorMsg('연결 실패: 잠시 후 다시 시도하거나 URL을 확인해주세요.');
+            } finally { setLoading(false); }
           };
-
-          useEffect(() => {
-            if (sheetUrls.some(u => u.length > 5)) fetchSheetData();
-          }, []);
 
           const handleSaveSettings = () => {
             localStorage.setItem('qr_dashboard_urls', JSON.stringify(sheetUrls));
@@ -554,222 +203,161 @@
 
           const filteredData = useMemo(() => {
             return data.filter(item => {
-              const matchSearch = (item.project || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
-                                  (item.client || '').toLowerCase().includes(searchTerm.toLowerCase());
+              const s = searchTerm.toLowerCase();
+              if (!((item.project||'').toLowerCase().includes(s) || (item.client||'').toLowerCase().includes(s))) return false;
+              if (filters.type !== 'all' && item.type !== filters.type) return false;
+              if (filters.manager !== 'all' && item.manager !== filters.manager) return false;
+              if (filters.supplier !== 'all' && item.supplier !== filters.supplier) return false;
               
-              const matchType = filters.type === 'all' || item.type === filters.type;
-              const matchManager = filters.manager === 'all' || item.manager === filters.manager;
-              const matchSupplier = filters.supplier === 'all' || item.supplier === filters.supplier;
-
-              let matchPayStatus = true;
               if (filters.payStatus !== 'all') {
-                 const statuses = [item.downPay?.status, item.midPay?.status, item.balance?.status];
-                 matchPayStatus = statuses.includes(filters.payStatus);
+                 if (![item.downPay?.status, item.midPay?.status, item.balance?.status].includes(filters.payStatus)) return false;
               }
-
-              let matchTaxStatus = true;
               if (filters.taxStatus !== 'all') {
-                 const taxes = [item.downPay?.tax, item.midPay?.tax, item.balance?.tax];
-                 matchTaxStatus = taxes.includes(filters.taxStatus);
+                 if (![item.downPay?.tax, item.midPay?.tax, item.balance?.tax].includes(filters.taxStatus)) return false;
               }
-
-              const matchDate = (!filters.startDate || item.contractDate >= filters.startDate) &&
-                                (!filters.endDate || item.contractDate <= filters.endDate);
-
-              return matchSearch && matchType && matchManager && matchSupplier && matchPayStatus && matchTaxStatus && matchDate;
+              if (filters.startDate && item.contractDate < filters.startDate) return false;
+              if (filters.endDate && item.contractDate > filters.endDate) return false;
+              return true;
             });
           }, [data, searchTerm, filters]);
 
-          const stats = useMemo(() => {
-            return {
-              total: filteredData.length,
-              revenue: filteredData.filter(i => i.type === '입금').reduce((acc, cur) => acc + (cur.amount || 0), 0),
-              expense: filteredData.filter(i => i.type === '지출').reduce((acc, cur) => acc + (cur.amount || 0), 0),
-              receivable: filteredData.filter(i => i.type === '입금').reduce((acc, cur) => {
-                  let sum = 0;
-                  if (cur.balance?.status !== '정산 완료') sum += (cur.balance?.amount || 0);
-                  return acc + sum;
-              }, 0)
-            };
-          }, [filteredData]);
+          const stats = useMemo(() => ({
+            total: filteredData.length,
+            revenue: filteredData.filter(i => i.type === '입금').reduce((a, c) => a + (c.amount || 0), 0),
+            expense: filteredData.filter(i => i.type === '지출').reduce((a, c) => a + (c.amount || 0), 0),
+            receivable: filteredData.filter(i => i.type === '입금').reduce((a, c) => a + (c.balance?.status !== '정산 완료' ? (c.balance?.amount||0) : 0), 0)
+          }), [filteredData]);
 
-          // 컴포넌트 렌더링 후 아이콘 갱신
-          useEffect(() => {
-            lucide.createIcons();
-          });
+          useEffect(() => { lucide.createIcons(); });
 
           return (
-            <div className="min-h-screen bg-[#F8FAFC] text-slate-800 font-sans p-4 md:p-8">
+            <div className="min-h-screen p-4 md:p-8 font-sans text-slate-800">
+              <SettingsModal isOpen={isSettingsOpen} onClose={()=>setIsSettingsOpen(false)} sheetUrls={sheetUrls} setSheetUrls={setSheetUrls} onSave={handleSaveSettings} />
               
-              <SettingsModal 
-                isOpen={isSettingsOpen} 
-                onClose={() => setIsSettingsOpen(false)}
-                sheetUrls={sheetUrls}
-                setSheetUrls={setSheetUrls}
-                onSave={handleSaveSettings}
-              />
-
-              <header className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <header className="mb-8 flex flex-col md:flex-row justify-between gap-6 md:items-end">
                 <div>
-                  <span className="text-xs font-bold text-indigo-600 tracking-wider uppercase mb-1 block">The QR Project Management</span>
-                  <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight leading-none flex items-center gap-2">
-                    통합 대시보드
-                    {loading && <RefreshCw className="animate-spin text-slate-400" size={20} />}
-                  </h1>
-                  <div className="flex items-center gap-2 mt-2">
-                     <p className="text-slate-500 text-sm">프로젝트 및 자금 흐름 통합 관리</p>
-                     {lastUpdated && (
-                       <span className="text-xs text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-                         Updated: {lastUpdated.toLocaleTimeString()}
-                       </span>
-                     )}
-                  </div>
-                  {errorMsg && (
-                    <div className="mt-2 text-rose-600 text-xs font-bold flex items-center gap-1">
-                      <AlertCircle size={12} /> {errorMsg}
-                    </div>
-                  )}
+                   <span className="text-xs font-bold text-indigo-600 uppercase tracking-wider block mb-1">The QR Project Management</span>
+                   <h1 className="text-3xl font-extrabold flex items-center gap-2">통합 대시보드 {loading && <RefreshCw className="animate-spin text-slate-400" size={20} />}</h1>
+                   <div className="flex items-center gap-2 mt-2 text-sm text-slate-500">
+                     <span>{lastUpdated ? `Updated: ${lastUpdated.toLocaleTimeString()}` : '데이터를 불러와주세요'}</span>
+                   </div>
+                   {errorMsg && <div className="mt-2 text-rose-600 text-xs font-bold flex items-center gap-1"><AlertCircle size={12}/>{errorMsg}</div>}
                 </div>
-                <div className="flex gap-3">
-                  <button 
-                    onClick={() => setIsSettingsOpen(true)}
-                    className="flex items-center gap-2 bg-white text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
-                  >
-                    <Settings size={18} className="text-slate-500" />
-                    <span>설정</span>
-                  </button>
-                   <button 
-                     onClick={fetchSheetData}
-                     className="flex items-center gap-2 bg-white text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all shadow-sm"
-                   >
-                    <RefreshCw size={18} className={`text-slate-500 ${loading ? 'animate-spin' : ''}`} />
-                    <span>새로고침</span>
-                  </button>
+                <div className="flex gap-2">
+                    <button onClick={()=>setIsSettingsOpen(true)} className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border hover:bg-slate-50 text-sm font-bold"><Settings size={16}/> 설정</button>
+                    <button onClick={fetchSheetData} className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border hover:bg-slate-50 text-sm font-bold"><RefreshCw size={16} className={loading?'animate-spin':''}/> 새로고침</button>
                 </div>
               </header>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-                {[
-                  { label: '전체 프로젝트', value: `${stats.total}건`, icon: Briefcase, color: 'text-slate-600', bg: 'bg-slate-100' },
-                  { label: '총 매출 (입금)', value: `${new Intl.NumberFormat('ko-KR', { notation: "compact" }).format(stats.revenue)}원`, icon: DollarSign, color: 'text-indigo-600', bg: 'bg-indigo-50' },
-                  { label: '총 지출', value: `${new Intl.NumberFormat('ko-KR', { notation: "compact" }).format(stats.expense)}원`, icon: CreditCard, color: 'text-rose-600', bg: 'bg-rose-50' },
-                  { label: '미수 잔금', value: `${new Intl.NumberFormat('ko-KR', { notation: "compact" }).format(stats.receivable)}원`, icon: Wallet, color: 'text-amber-600', bg: 'bg-amber-50' },
-                ].map((stat, idx) => (
-                  <div key={idx} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300">
-                    <div className="flex justify-between items-start mb-3">
-                      <div className={`p-2.5 rounded-xl ${stat.bg} ${stat.color}`}>
-                        <stat.icon size={20} />
-                      </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                 {[
+                    { l: '전체 프로젝트', v: `${stats.total}건`, i: Briefcase, c: 'text-slate-600', b: 'bg-slate-100' },
+                    { l: '총 매출', v: new Intl.NumberFormat('ko-KR', { notation:"compact" }).format(stats.revenue), i: DollarSign, c: 'text-indigo-600', b: 'bg-indigo-50' },
+                    { l: '총 지출', v: new Intl.NumberFormat('ko-KR', { notation:"compact" }).format(stats.expense), i: CreditCard, c: 'text-rose-600', b: 'bg-rose-50' },
+                    { l: '미수 잔금', v: new Intl.NumberFormat('ko-KR', { notation:"compact" }).format(stats.receivable), i: Wallet, c: 'text-amber-600', b: 'bg-amber-50' },
+                 ].map((k,i) => (
+                    <div key={i} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-3 ${k.b} ${k.c}`}><k.i size={20}/></div>
+                        <div><span className="text-xs font-medium text-slate-400">{k.l}</span><p className="text-2xl font-bold tracking-tight">{k.v}</p></div>
                     </div>
-                    <div className="space-y-1">
-                      <span className="text-xs font-medium text-slate-400">{stat.label}</span>
-                      <p className="text-2xl font-bold text-slate-900 tracking-tight">{stat.value}</p>
-                    </div>
-                  </div>
-                ))}
+                 ))}
               </div>
 
-              <div className="flex flex-col xl:flex-row gap-4 mb-6 items-start xl:items-center justify-between">
-                <div className="flex flex-wrap items-center gap-2 w-full xl:w-auto p-1.5 bg-white border border-slate-200 rounded-xl shadow-sm">
-                   <div className="px-3 py-2 flex items-center gap-2 text-slate-500 border-r border-slate-100 mr-1">
-                     <Filter size={16} />
-                     <span className="text-xs font-bold uppercase tracking-wide">Filters</span>
-                   </div>
-                   
-                   <div className="flex items-center gap-2 px-2">
-                     <input 
-                       type="date" 
-                       className="text-xs font-mono text-slate-600 bg-slate-50 border border-slate-200 rounded px-2 py-1.5 focus:outline-none focus:border-indigo-500"
-                       value={filters.startDate}
-                       onChange={(e) => setFilters({...filters, startDate: e.target.value})}
-                       title="시작일"
-                     />
-                     <span className="text-slate-400 text-xs">~</span>
-                     <input 
-                       type="date" 
-                       className="text-xs font-mono text-slate-600 bg-slate-50 border border-slate-200 rounded px-2 py-1.5 focus:outline-none focus:border-indigo-500"
-                       value={filters.endDate}
-                       onChange={(e) => setFilters({...filters, endDate: e.target.value})}
-                       title="종료일"
-                     />
-                   </div>
-
-                   <div className="w-[1px] h-6 bg-slate-100 mx-1"></div>
-
-                   <select 
-                      className="bg-transparent text-slate-600 text-sm font-medium hover:bg-slate-50 rounded-lg py-2 pl-2 pr-6 focus:ring-0 border-none cursor-pointer outline-none"
-                      value={filters.type}
-                      onChange={(e) => setFilters({...filters, type: e.target.value})}
-                   >
-                      <option value="all">구분 전체</option>
-                      <option value="입금">입금</option>
-                      <option value="지출">지출</option>
-                      <option value="미확정">미확정</option>
-                   </select>
-
-                   <select 
-                      className="bg-transparent text-slate-600 text-sm font-medium hover:bg-slate-50 rounded-lg py-2 pl-2 pr-6 focus:ring-0 border-none cursor-pointer outline-none"
-                      value={filters.manager}
-                      onChange={(e) => setFilters({...filters, manager: e.target.value})}
-                   >
-                      <option value="all">담당자 전체</option>
-                      <option value="차현지">차현지</option>
-                      <option value="안세준">안세준</option>
-                      <option value="정지운">정지운</option>
-                      <option value="선해동">선해동</option>
-                   </select>
-
-                   <select 
-                      className="bg-transparent text-slate-600 text-sm font-medium hover:bg-slate-50 rounded-lg py-2 pl-2 pr-6 focus:ring-0 border-none cursor-pointer outline-none"
-                      value={filters.supplier}
-                      onChange={(e) => setFilters({...filters, supplier: e.target.value})}
-                   >
-                      <option value="all">공급업체 전체</option>
-                      <option value="더큐알">더큐알</option>
-                      <option value="더블제이스튜디오">더블제이스튜디오</option>
-                   </select>
-                </div>
-
-                <div className="flex gap-3 w-full xl:w-auto">
-                  <div className="relative flex-1 xl:w-64 group">
-                    <Search size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
-                    <input 
-                      type="text" 
-                      className="w-full bg-white border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 block pl-10 p-2.5 shadow-sm transition-all" 
-                      placeholder="프로젝트, 거래처 검색..." 
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                  </div>
-                  
-                  <div className="bg-white p-1 rounded-xl border border-slate-200 shadow-sm flex items-center gap-1">
-                    <button 
-                      onClick={() => setViewMode('table')}
-                      className={`p-2 rounded-lg transition-all duration-200 ${viewMode === 'table' ? 'bg-slate-100 text-slate-900' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
-                    >
-                      <TableIcon size={18} />
-                    </button>
-                    <button 
-                      onClick={() => setViewMode('card')}
-                      className={`p-2 rounded-lg transition-all duration-200 ${viewMode === 'card' ? 'bg-slate-100 text-slate-900' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}`}
-                    >
-                      <LayoutGrid size={18} />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pb-12 min-h-[400px]">
-                 <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-                    <ProjectListView data={filteredData} viewMode={viewMode} />
+              <div className="flex flex-col xl:flex-row gap-4 mb-6 justify-between">
+                 <div className="flex flex-wrap gap-2 items-center bg-white p-2 rounded-xl border shadow-sm">
+                    <div className="px-3 flex items-center gap-2 text-slate-500 font-bold uppercase text-xs border-r mr-1"><Filter size={14}/>Filter</div>
+                    <input type="date" className="bg-slate-50 border rounded px-2 py-1 text-xs" value={filters.startDate} onChange={e=>setFilters({...filters, startDate:e.target.value})} />
+                    <span className="text-xs text-slate-400">~</span>
+                    <input type="date" className="bg-slate-50 border rounded px-2 py-1 text-xs" value={filters.endDate} onChange={e=>setFilters({...filters, endDate:e.target.value})} />
+                    <select className="bg-transparent text-sm font-medium py-1 px-2 cursor-pointer outline-none" value={filters.type} onChange={e=>setFilters({...filters, type:e.target.value})}>
+                        <option value="all">구분 전체</option><option value="입금">입금</option><option value="지출">지출</option>
+                    </select>
+                    <select className="bg-transparent text-sm font-medium py-1 px-2 cursor-pointer outline-none" value={filters.manager} onChange={e=>setFilters({...filters, manager:e.target.value})}>
+                        <option value="all">담당자 전체</option><option value="차현지">차현지</option><option value="안세준">안세준</option><option value="정지운">정지운</option>
+                    </select>
+                 </div>
+                 <div className="flex gap-2">
+                    <div className="relative group flex-1 xl:w-64">
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
+                        <input type="text" className="w-full pl-9 pr-3 py-2.5 bg-white border rounded-xl text-sm focus:ring-2 focus:ring-indigo-100 outline-none" placeholder="검색..." value={searchTerm} onChange={e=>setSearchTerm(e.target.value)}/>
+                    </div>
+                    <div className="bg-white border p-1 rounded-xl flex">
+                        <button onClick={()=>setViewMode('table')} className={`p-2 rounded-lg ${viewMode==='table'?'bg-slate-100':''}`}><TableIcon size={18}/></button>
+                        <button onClick={()=>setViewMode('card')} className={`p-2 rounded-lg ${viewMode==='card'?'bg-slate-100':''}`}><LayoutGrid size={18}/></button>
+                    </div>
                  </div>
               </div>
+
+              {data.length === 0 ? (
+                  <div className="py-20 text-center text-slate-400 bg-white rounded-2xl border border-dashed flex flex-col items-center gap-3">
+                      <div className="p-4 bg-slate-50 rounded-full"><Archive size={24}/></div>
+                      <p>데이터가 없습니다. 설정에서 시트 URL을 연결해주세요.</p>
+                  </div>
+              ) : viewMode === 'table' ? (
+                  <div className="bg-white rounded-2xl border overflow-hidden shadow-sm">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm text-left whitespace-nowrap">
+                        <thead className="bg-slate-50 border-b text-xs uppercase text-slate-500">
+                          <tr>
+                            <th className="px-4 py-3">No.</th><th className="px-4 py-3">구분</th><th className="px-4 py-3">담당자</th>
+                            <th className="px-4 py-3">프로젝트 / 거래처</th><th className="px-4 py-3 text-right">총액</th>
+                            <th className="px-4 py-3 text-right bg-slate-50/50">선금</th><th className="px-4 py-3 text-right">중도금</th><th className="px-4 py-3 text-right bg-slate-50/50">잔금</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y">
+                          {filteredData.map(row => (
+                            <tr key={row.id} className="hover:bg-slate-50/50">
+                               <td className="px-4 py-4 text-xs font-mono text-slate-400">{row.fileNo}</td>
+                               <td className="px-4 py-4"><Badge label={row.type}/></td>
+                               <td className="px-4 py-4"><Badge label={row.manager} type="manager"/></td>
+                               <td className="px-4 py-4"><div className="font-bold text-slate-800">{row.project}</div><div className="text-xs text-slate-500 flex items-center gap-1"><Building2 size={10}/>{row.client}</div></td>
+                               <td className="px-4 py-4 text-right font-bold">{formatCurrency(row.amount)}</td>
+                               <td className="px-4 py-4 bg-slate-50/50 align-top"><PaymentCell data={row.downPay}/></td>
+                               <td className="px-4 py-4 align-top"><PaymentCell data={row.midPay}/></td>
+                               <td className="px-4 py-4 bg-slate-50/50 align-top"><PaymentCell data={row.balance}/></td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+              ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-5">
+                      {filteredData.map(row => (
+                          <div key={row.id} className="bg-white rounded-2xl border p-5 hover:shadow-lg transition-all relative overflow-hidden group">
+                              <div className={`absolute left-0 top-0 bottom-0 w-1 ${row.type==='입금'?'bg-indigo-500':row.type==='지출'?'bg-rose-500':'bg-slate-300'}`}></div>
+                              <div className="pl-3 mb-4">
+                                  <div className="flex justify-between items-start mb-1"><Badge label={row.type}/><span className="text-xs font-mono text-slate-400">No.{row.fileNo}</span></div>
+                                  <h3 className="font-bold text-lg leading-snug group-hover:text-indigo-700 transition-colors">{row.project}</h3>
+                                  <div className="text-xs text-slate-500 mt-1 flex gap-1 items-center"><Building2 size={12}/> {row.client}</div>
+                              </div>
+                              <div className="pl-3 grid grid-cols-2 gap-2 mb-4">
+                                  <div className="bg-slate-50 p-2 rounded border"><span className="text-[10px] text-slate-400 block">담당자</span><Badge label={row.manager} type="manager"/></div>
+                                  <div className="bg-slate-50 p-2 rounded border"><span className="text-[10px] text-slate-400 block">기간</span><span className="text-xs font-mono">{row.startDate}~{row.endDate}</span></div>
+                              </div>
+                              <div className="pl-3 space-y-2 border-t pt-3">
+                                  <div className="flex justify-between font-bold text-sm"><span>총 계약금액</span><span>{formatCurrency(row.amount)}</span></div>
+                                  {['선금','중도금','잔금'].map((k,i) => {
+                                      const d = k==='선금'?row.downPay:k==='중도금'?row.midPay:row.balance;
+                                      if(!d || !d.amount) return null;
+                                      return (
+                                          <div key={i} className="flex justify-between text-xs items-center">
+                                              <div className="flex gap-2 items-center"><span className="w-8 text-slate-400">{k}</span><Badge label={d.status}/><Badge label={d.tax}/></div>
+                                              <span className="font-bold text-slate-700">{formatCurrency(d.amount)}</span>
+                                          </div>
+                                      )
+                                  })}
+                              </div>
+                          </div>
+                      ))}
+                  </div>
+              )}
             </div>
           );
         }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<ProjectDashboard />);
+        root.render(<App />);
     </script>
 </body>
 </html>
