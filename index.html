@@ -476,14 +476,15 @@
             const [errorMsg, setErrorMsg] = useState('');
 
             useEffect(() => {
-                const savedUrls = localStorage.getItem('qr_dashboard_urls');
+                // 저장된 설정을 불러올 때 키를 변경하여 이전 설정(2~3개 링크)이 덮어쓰지 않도록 함
+                const savedUrls = localStorage.getItem('qr_dashboard_urls_v2');
                 if (savedUrls) setSheetUrls(JSON.parse(savedUrls));
             }, []);
 
             const fetchSheetData = async () => {
                 const validUrls = sheetUrls.filter(url => url && url.includes('output=csv'));
                 if (validUrls.length === 0) {
-                    if (localStorage.getItem('qr_dashboard_urls')) setData([]); 
+                    if (localStorage.getItem('qr_dashboard_urls_v2')) setData([]); 
                     return;
                 }
                 setLoading(true);
@@ -514,7 +515,8 @@
             }, []);
 
             const handleSaveSettings = () => {
-                localStorage.setItem('qr_dashboard_urls', JSON.stringify(sheetUrls));
+                // 저장 시에도 새로운 키 사용
+                localStorage.setItem('qr_dashboard_urls_v2', JSON.stringify(sheetUrls));
                 setIsSettingsOpen(false);
                 fetchSheetData();
             };
