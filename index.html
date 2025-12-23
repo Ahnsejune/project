@@ -34,7 +34,7 @@
         import { 
             Search, Filter, Briefcase, CheckCircle2, DollarSign, Building2, Users, MoreHorizontal,
             Calendar, LayoutGrid, Table as TableIcon, Download, Plus, Wallet, Archive, Settings,
-            RefreshCw, Link as LinkIcon, AlertCircle, X, CreditCard, FileText, UserCircle
+            RefreshCw, Link as LinkIcon, AlertCircle, X, CreditCard, FileText, UserCircle, CheckSquare
         } from 'https://esm.sh/lucide-react@0.263.1?dev';
 
         const { useState, useEffect, useMemo } = React;
@@ -237,15 +237,17 @@
             );
         };
 
-        const ProjectListView = ({ data, viewMode, isArchived = false }) => {
+        const ProjectListView = ({ data, viewMode, activeTab }) => {
             if (data.length === 0) {
                 return (
                     <div className="py-20 text-center text-slate-400 bg-white rounded-2xl border border-slate-200 border-dashed flex flex-col items-center justify-center gap-3">
                         <div className="p-4 bg-slate-50 rounded-full">
-                           {isArchived ? <Archive size={24} className="text-slate-300" /> : <Search size={24} className="text-slate-300" />}
+                           {activeTab === 'completed' ? <CheckSquare size={24} className="text-slate-300" /> : <Search size={24} className="text-slate-300" />}
                         </div>
                         <p className="text-sm font-medium">데이터가 없습니다.</p>
-                        <p className="text-xs text-slate-400">필터 조건을 변경하거나 데이터를 확인해주세요.</p>
+                        <p className="text-xs text-slate-400">
+                            {activeTab === 'completed' ? '아직 완료된(잔금 정산 완료) 프로젝트가 없습니다.' : '조건에 맞는 진행 중인 프로젝트가 없습니다.'}
+                        </p>
                     </div>
                 );
             }
@@ -461,6 +463,8 @@
             const [data, setData] = useState(SAMPLE_DATA);
             const [viewMode, setViewMode] = useState('table');
             const [searchTerm, setSearchTerm] = useState('');
+            const [activeTab, setActiveTab] = useState('active'); // 'active' | 'completed'
+
             const [filters, setFilters] = useState({
                 type: 'all', manager: 'all', supplier: 'all', payStatus: 'all', taxStatus: 'all', startDate: '', endDate: ''
             });
@@ -540,10 +544,14 @@
                     }
                     const matchDate = (!filters.startDate || item.contractDate >= filters.startDate) &&
                                       (!filters.endDate || item.contractDate <= filters.endDate);
+                    
+                    // Tab Filter
+                    const isCompleted = item.balance?.status === '정산 완료';
+                    const matchTab = (activeTab === 'active' && !isCompleted) || (activeTab === 'completed' && isCompleted);
 
-                    return matchSearch && matchType && matchManager && matchSupplier && matchPayStatus && matchTaxStatus && matchDate;
+                    return matchSearch && matchType && matchManager && matchSupplier && matchPayStatus && matchTaxStatus && matchDate && matchTab;
                 });
-            }, [data, searchTerm, filters]);
+            }, [data, searchTerm, filters, activeTab]);
 
             const stats = useMemo(() => {
                 return {
@@ -587,7 +595,7 @@
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
                         {[
-                            { label: '전체 프로젝트', value: `${stats.total}건`, icon: Briefcase, color: 'text-slate-600', bg: 'bg-slate-100' },
+                            { label: activeTab === 'completed' ? '완료된 프로젝트' : '진행 중 프로젝트', value: `${stats.total}건`, icon: activeTab === 'completed' ? CheckSquare : Briefcase, color: 'text-slate-600', bg: 'bg-slate-100' },
                             { label: '총 매출 (입금)', value: `${new Intl.NumberFormat('ko-KR', { notation: "compact" }).format(stats.revenue)}원`, icon: DollarSign, color: 'text-indigo-600', bg: 'bg-indigo-50' },
                             { label: '총 지출', value: `${new Intl.NumberFormat('ko-KR', { notation: "compact" }).format(stats.expense)}원`, icon: CreditCard, color: 'text-rose-600', bg: 'bg-rose-50' },
                             { label: '미수 잔금', value: `${new Intl.NumberFormat('ko-KR', { notation: "compact" }).format(stats.receivable)}원`, icon: Wallet, color: 'text-amber-600', bg: 'bg-amber-50' },
@@ -602,6 +610,15 @@
                                 </div>
                             </div>
                         ))}
+                    </div>
+
+                    <div className="flex space-x-1 bg-slate-100 p-1 rounded-xl w-fit mb-6">
+                        <button onClick={() => setActiveTab('active')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'active' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+                            진행 중
+                        </button>
+                        <button onClick={() => setActiveTab('completed')} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === 'completed' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}>
+                            완료됨
+                        </button>
                     </div>
 
                     <div className="flex flex-col xl:flex-row gap-4 mb-6 items-start xl:items-center justify-between">
@@ -639,7 +656,7 @@
                     </div>
                     
                     <div className="pb-12 min-h-[400px]">
-                        <ProjectListView data={filteredData} viewMode={viewMode} />
+                        <ProjectListView data={filteredData} viewMode={viewMode} activeTab={activeTab} />
                     </div>
                 </div>
             );
